@@ -1,0 +1,8 @@
+/NetAddr-IP-LazyInit-*/
+/NetAddr-IP-LazyInit-*.tar.gz
+*swp
+*local*
+.build/
+dist.ini
+nytprof.out
+nytprof/
