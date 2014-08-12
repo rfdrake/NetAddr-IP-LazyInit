@@ -12,7 +12,7 @@ my $ip = NetAddr::IP::LazyInit->new( '10.10.10.5' );
 
 is($ipcidr->addr, '10.10.10.5', 'Can we extract just the IP (cidr)');
 is($ipmask->addr, '10.10.10.5', 'Can we extract just the IP (netmask)');
-is($ip6->addr, 'FE80::', 'Can we extract just the IP for IPv6');
+is($ip6->addr, 'fe80::', 'Can we extract just the IP for IPv6');
 is($ip->addr, '10.10.10.5', 'No CIDR/subnet');
 
 done_testing();

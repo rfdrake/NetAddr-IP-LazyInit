@@ -2,7 +2,7 @@ package NetAddr::IP::LazyInit;
 
 use strict;
 use warnings;
-use NetAddr::IP;
+use NetAddr::IP qw( :lower );
 
 our $VERSION = eval '0.2';
 
@@ -80,7 +80,7 @@ sub isa { $_[1] eq 'NetAddr::IP'; }
 sub addr {
     my $self = shift;
     if ($self->{x}->[0] =~ /^(.*?)(?:\/|$)/) {
-        return uc($1);
+        return lc($1);
     }
 }
 
