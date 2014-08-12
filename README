@@ -5,7 +5,7 @@ NAME
 
 VERSION
 
-    0.2
+    0.3
 
 SYNOPSIS
 
@@ -34,9 +34,10 @@ WARNING
 
 CREDITS
 
-    This module was inspired by discussion with jhthorsen, and example code
-    he provided. The namespace and part of the documentation/source is
-    inspired by DateTime::LazyInit by Rick Measham, <rickm@cpan.org>
+    This module was inspired by discussion with Jan Henning Thorsen,
+    <jhthorsen at cpan.org>, and example code he provided. The namespace
+    and part of the documentation/source is inspired by DateTime::LazyInit
+    by Rick Measham, <rickm@cpan.org>
 
     I didn't have to do much so I hate to take author credit, but I am
     providing the module, so complaints can go to me.

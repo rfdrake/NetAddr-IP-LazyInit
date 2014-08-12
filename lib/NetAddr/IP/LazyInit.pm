@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use NetAddr::IP qw( :lower );
 
-our $VERSION = eval '0.2';
+our $VERSION = eval '0.3';
 
 =head1 NAME
 
@@ -12,7 +12,7 @@ NetAddr::IP::LazyInit - NetAddr::IP objects with deferred validation B<SEE DESCR
 
 =head1 VERSION
 
-0.2
+0.3
 
 =head1 SYNOPSIS
 
@@ -42,9 +42,10 @@ and then die once it needs to inflate into a NetAddr::IP object.
 
 =head1 CREDITS
 
-This module was inspired by discussion with jhthorsen, and example code he
-provided.  The namespace and part of the documentation/source is inspired by
-DateTime::LazyInit by Rick Measham, E<lt>rickm@cpan.orgE<gt>
+This module was inspired by discussion with  Jan Henning Thorsen, E<lt>jhthorsen
+at cpan.orgE<gt>, and example code he provided.  The namespace and part of the
+documentation/source is inspired by DateTime::LazyInit by
+Rick Measham, E<lt>rickm@cpan.orgE<gt>
 
 I didn't have to do much so I hate to take author credit, but I am providing
 the module, so complaints can go to me.
