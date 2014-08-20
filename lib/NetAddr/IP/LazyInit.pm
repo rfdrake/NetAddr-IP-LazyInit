@@ -2,7 +2,8 @@ package NetAddr::IP::LazyInit;
 
 use strict;
 use warnings;
-use NetAddr::IP qw( :lower );
+use NetAddr::IP qw(Zero Zeros Ones V4mask V4net Coalesce Compact netlimit);
+use NetAddr::IP::Util;
 
 our $VERSION = eval '0.3';
 
@@ -70,13 +71,13 @@ at your option, any later version of Perl 5 you may have available.
 
 =cut
 
-
+require Exporter;
+our @ISA = qw(Exporter NetAddr::IP);
+our @EXPORT_OK = qw(Compact Coalesce Zero Zeros Ones V4mask V4net netlimit);
 
 sub new { my $class = shift; bless {x=>[@_]}, $class }
 
 sub can { NetAddr::IP->can($_[1]); }
-
-sub isa { $_[1] eq 'NetAddr::IP'; }
 
 sub addr {
     my $self = shift;
@@ -85,11 +86,42 @@ sub addr {
     }
 }
 
+sub import {
+  if (grep { $_ eq ':old_nth' } @_)
+  {
+    $NetAddr::IP::Lite::Old_nth = 1;
+    @_ = grep { $_ ne ':old_nth' } @_;
+  }
+  if (grep { $_ eq ':lower' } @_)
+  {
+    NetAddr::IP::Util::lower();
+    @_ = grep { $_ ne ':lower' } @_;
+  }
+  if (grep { $_ eq ':upper' } @_)
+  {
+    NetAddr::IP::Util::upper();
+    @_ = grep { $_ ne ':upper' } @_;
+  }
+
+  NetAddr::IP::LazyInit->export_to_level(1, @_);
+}
+
+# need to support everything that NetAddr::IP does
 use overload (
-    '""' => sub { $_[0]->{x}->[0] =~ m#/# ? $_[0]->{x}->[0] : $_[0]->inflate->cidr() },
+    '""' => sub { return $_[0]->inflate->cidr() },
+    '==' => sub {
+        my $a = $_[0];
+        $a->inflate if ref($_[0]) =~ /NetAddr::IP::LazyInit/;
+        my $b = $_[1];
+        $b->inflate if ref($_[1]) =~ /NetAddr::IP::LazyInit/;
+        return ($a eq $b);
+    },
     'eq' => sub {
-        my $a = $_[0]->inflate;
-        return ($a eq $_[1]);
+        my $a = $_[0];
+        $a->inflate if ref($_[0]) =~ /NetAddr::IP::LazyInit/;
+        my $b = $_[1];
+        $b->inflate if ref($_[1]) =~ /NetAddr::IP::LazyInit/;
+        return ($a eq $b);
     },
 );
 
@@ -104,9 +136,11 @@ sub AUTOLOAD {
 
 sub inflate {
     my $self = shift;
+    my $method = shift;
     my $obj = NetAddr::IP->new(@{ $self->{x} });
     %$self = %$obj;
     bless $self, 'NetAddr::IP';
+    return $method ? $self->method( @_ ) : $self;
 }
 
 1;
