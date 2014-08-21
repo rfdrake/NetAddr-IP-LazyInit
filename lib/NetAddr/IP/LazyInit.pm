@@ -72,7 +72,7 @@ at your option, any later version of Perl 5 you may have available.
 =cut
 
 require Exporter;
-our @ISA = qw(Exporter NetAddr::IP);
+our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(Compact Coalesce Zero Zeros Ones V4mask V4net netlimit);
 
 sub new { my $class = shift; bless {x=>[@_]}, $class }
@@ -131,7 +131,7 @@ sub AUTOLOAD {
   %$self = %$obj;
   bless $self, 'NetAddr::IP';
   our $AUTOLOAD =~ /::(\w+)$/;
-  $self->$1(@_);
+  return $self->$1(@_);
 }
 
 sub inflate {
