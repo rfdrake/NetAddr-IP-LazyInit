@@ -103,6 +103,11 @@ sub addr {
 }
 
 sub import {
+    if (grep { $_ eq ':rfc3021' } @_)
+    {
+        $NetAddr::IP::rfc3021 = 1;
+        @_ = grep { $_ ne ':rfc3021' } @_;
+    }
     if (grep { $_ eq ':old_storable' } @_) {
         @_ = grep { $_ ne ':old_storable' } @_;
     }
