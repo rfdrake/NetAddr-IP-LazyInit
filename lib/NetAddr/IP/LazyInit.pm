@@ -102,6 +102,15 @@ sub addr {
     }
 }
 
+sub mask {
+    my $self = shift;
+    if ($self->{x}->[1] && $self->{x}->[1] =~ /\D/) {
+        return $self->{x}->[1];
+    } else {
+        return $self->inflate->mask;
+    }
+}
+
 sub import {
     if (grep { $_ eq ':rfc3021' } @_)
     {
