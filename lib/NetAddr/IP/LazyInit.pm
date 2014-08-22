@@ -127,23 +127,21 @@ sub import {
 
 # need to support everything that NetAddr::IP does
 use overload (
-    '@{}'   => sub {
-        return [ $_[0]->inflate->hostenum ];
-    },
-    '""' => sub { return $_[0]->inflate->cidr() },
+    '@{}'   => sub { return [ $_[0]->inflate->hostenum ]; },
+    '""'    => sub { return $_[0]->inflate->cidr() },
     'cmp'   => sub {
-            $_[0]->inflate if ref($_[0]) eq 'NetAddr::IP::LazyInit';
-            $_[1]->inflate if ref($_[1]) eq 'NetAddr::IP::LazyInit';
-            NetAddr::IP::comp_addr_mask(@_);
+        $_[0]->inflate if ref($_[0]) eq 'NetAddr::IP::LazyInit';
+        $_[1]->inflate if ref($_[1]) eq 'NetAddr::IP::LazyInit';
+        NetAddr::IP::comp_addr_mask(@_);
     },
-    '==' => sub {
+    '=='    => sub {
         my $a = $_[0];
         $a->inflate if ref($_[0]) =~ /NetAddr::IP::LazyInit/;
         my $b = $_[1];
         $b->inflate if ref($_[1]) =~ /NetAddr::IP::LazyInit/;
         return ($a eq $b);
     },
-    'eq' => sub {
+    'eq'    => sub {
         my $a = $_[0];
         $a->inflate if ref($_[0]) =~ /NetAddr::IP::LazyInit/;
         my $b = $_[1];
