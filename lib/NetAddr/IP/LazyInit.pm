@@ -3,6 +3,7 @@ package NetAddr::IP::LazyInit;
 use strict;
 use warnings;
 use NetAddr::IP qw(Zero Zeros Ones V4mask V4net netlimit);
+use Socket qw(inet_aton);
 use NetAddr::IP::Util;
 
 our $VERSION = eval '0.4';
@@ -75,7 +76,23 @@ require Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT_OK = qw(Compact Coalesce Zero Zeros Ones V4mask V4net netlimit);
 
+# local copy for our functions because otherwise it takes 717ns/call to reference
+my $ones = &Ones;
+# this is to zero the ipv6 portion of the address
+my $zerov6 = pack('n6', (0,0,0,0,0,0));
+
 sub new { my $class = shift; bless {x=>[@_]}, $class }
+
+# create a real NetAddr::IP from a single IPv4 address with almost no validation
+# this has more overhead than LazyInit's new() but much less if you actually
+# make use of the IP object.
+sub new_ipv4 {
+    return bless {
+        addr    => $zerov6 . inet_aton($_[1]),
+        mask    => $ones,
+        isv6    => 0,
+    }, 'NetAddr::IP';
+}
 
 sub can { NetAddr::IP->can($_[1]); }
 
