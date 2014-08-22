@@ -127,6 +127,9 @@ sub import {
 
 # need to support everything that NetAddr::IP does
 use overload (
+    '@{}'   => sub {
+        return [ $_[0]->inflate->hostenum ];
+    },
     '""' => sub { return $_[0]->inflate->cidr() },
     'cmp'   => sub {
             $_[0]->inflate if ref($_[0]) eq 'NetAddr::IP::LazyInit';
