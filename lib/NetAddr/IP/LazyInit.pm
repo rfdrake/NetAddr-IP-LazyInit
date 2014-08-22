@@ -2,7 +2,7 @@ package NetAddr::IP::LazyInit;
 
 use strict;
 use warnings;
-use NetAddr::IP qw(Zero Zeros Ones V4mask V4net Coalesce Compact netlimit);
+use NetAddr::IP qw(Zero Zeros Ones V4mask V4net netlimit);
 use NetAddr::IP::Util;
 
 our $VERSION = eval '0.3';
@@ -79,6 +79,22 @@ sub new { my $class = shift; bless {x=>[@_]}, $class }
 
 sub can { NetAddr::IP->can($_[1]); }
 
+sub Compact {
+    for (@_) {
+        $_->inflate if (ref($_) eq 'NetAddr::IP::LazyInit');
+    }
+    return NetAddr::IP::Compact(@_);
+}
+
+
+
+sub Coalesce {
+    for (@_) {
+        $_->inflate if (ref($_) eq 'NetAddr::IP::LazyInit');
+    }
+    return NetAddr::IP::Coalesce(@_);
+}
+
 sub addr {
     my $self = shift;
     if ($self->{x}->[0] =~ /^(.*?)(?:\/|$)/) {
@@ -109,6 +125,11 @@ sub import {
 # need to support everything that NetAddr::IP does
 use overload (
     '""' => sub { return $_[0]->inflate->cidr() },
+    'cmp'   => sub {
+            $_[0]->inflate if ref($_[0]) eq 'NetAddr::IP::LazyInit';
+            $_[1]->inflate if ref($_[1]) eq 'NetAddr::IP::LazyInit';
+            NetAddr::IP::comp_addr_mask(@_);
+    },
     '==' => sub {
         my $a = $_[0];
         $a->inflate if ref($_[0]) =~ /NetAddr::IP::LazyInit/;
