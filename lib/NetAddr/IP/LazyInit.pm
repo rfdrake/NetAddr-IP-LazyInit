@@ -5,7 +5,7 @@ use warnings;
 use NetAddr::IP qw(Zero Zeros Ones V4mask V4net netlimit);
 use NetAddr::IP::Util;
 
-our $VERSION = eval '0.3';
+our $VERSION = eval '0.4';
 
 =head1 NAME
 
@@ -13,7 +13,7 @@ NetAddr::IP::LazyInit - NetAddr::IP objects with deferred validation B<SEE DESCR
 
 =head1 VERSION
 
-0.3
+0.4
 
 =head1 SYNOPSIS
 
