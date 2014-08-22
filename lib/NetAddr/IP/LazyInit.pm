@@ -103,21 +103,24 @@ sub addr {
 }
 
 sub import {
-  if (grep { $_ eq ':old_nth' } @_)
-  {
-    $NetAddr::IP::Lite::Old_nth = 1;
-    @_ = grep { $_ ne ':old_nth' } @_;
-  }
-  if (grep { $_ eq ':lower' } @_)
-  {
-    NetAddr::IP::Util::lower();
-    @_ = grep { $_ ne ':lower' } @_;
-  }
-  if (grep { $_ eq ':upper' } @_)
-  {
-    NetAddr::IP::Util::upper();
-    @_ = grep { $_ ne ':upper' } @_;
-  }
+    if (grep { $_ eq ':old_storable' } @_) {
+        @_ = grep { $_ ne ':old_storable' } @_;
+    }
+    if (grep { $_ eq ':old_nth' } @_)
+    {
+        $NetAddr::IP::Lite::Old_nth = 1;
+        @_ = grep { $_ ne ':old_nth' } @_;
+    }
+    if (grep { $_ eq ':lower' } @_)
+    {
+        NetAddr::IP::Util::lower();
+        @_ = grep { $_ ne ':lower' } @_;
+    }
+    if (grep { $_ eq ':upper' } @_)
+    {
+        NetAddr::IP::Util::upper();
+        @_ = grep { $_ ne ':upper' } @_;
+    }
 
   NetAddr::IP::LazyInit->export_to_level(1, @_);
 }
