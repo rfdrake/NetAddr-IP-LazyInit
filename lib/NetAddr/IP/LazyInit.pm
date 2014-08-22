@@ -129,11 +129,12 @@ sub import {
 use overload (
     '@{}'   => sub { return [ $_[0]->inflate->hostenum ]; },
     '""'    => sub { return $_[0]->inflate->cidr() },
-    'cmp'   => sub {
-        $_[0]->inflate if ref($_[0]) eq 'NetAddr::IP::LazyInit';
-        $_[1]->inflate if ref($_[1]) eq 'NetAddr::IP::LazyInit';
-        NetAddr::IP::comp_addr_mask(@_);
-    },
+    'cmp'   => sub { inflate_args_and_run(\&NetAddr::IP::Lite::comp_addr_mask, @_); },
+    '++'    => sub { inflate_args_and_run(\&NetAddr::IP::Lite::plusplus, @_); },
+    '+'     => sub { inflate_args_and_run(\&NetAddr::IP::Lite::plus, @_); },
+    '--'    => sub { inflate_args_and_run(\&NetAddr::IP::Lite::minusminus, @_); },
+    '-'     => sub { inflate_args_and_run(\&NetAddr::IP::Lite::minus, @_); },
+    '='     => sub { inflate_args_and_run(\&NetAddr::IP::Lite::copy, @_); },
     '=='    => sub {
         my $a = $_[0];
         $a->inflate if ref($_[0]) =~ /NetAddr::IP::LazyInit/;
@@ -141,14 +142,28 @@ use overload (
         $b->inflate if ref($_[1]) =~ /NetAddr::IP::LazyInit/;
         return ($a eq $b);
     },
+    'ne'    => sub {
+        my $a = $_[0];
+        $a->inflate if ref($_[0]) eq 'NetAddr::IP::LazyInit';
+        my $b = $_[1];
+        $b->inflate if ref($_[1]) eq 'NetAddr::IP::LazyInit';
+        return ($a ne $b);
+    },
     'eq'    => sub {
         my $a = $_[0];
-        $a->inflate if ref($_[0]) =~ /NetAddr::IP::LazyInit/;
+        $a->inflate if ref($_[0]) eq 'NetAddr::IP::LazyInit';
         my $b = $_[1];
-        $b->inflate if ref($_[1]) =~ /NetAddr::IP::LazyInit/;
+        $b->inflate if ref($_[1]) eq 'NetAddr::IP::LazyInit';
         return ($a eq $b);
     },
 );
+
+sub inflate_args_and_run {
+    my $func = shift;
+    $_[0]->inflate if ref($_[0]) eq 'NetAddr::IP::LazyInit';
+    $_[1]->inflate if ref($_[1]) eq 'NetAddr::IP::LazyInit';
+    return &{$func}(@_);
+}
 
 sub AUTOLOAD {
   my $self = shift;
