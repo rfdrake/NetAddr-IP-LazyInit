@@ -129,6 +129,7 @@ sub import {
 use overload (
     '@{}'   => sub { return [ $_[0]->inflate->hostenum ]; },
     '""'    => sub { return $_[0]->inflate->cidr() },
+    '<=>'   => sub { inflate_args_and_run(\&NetAddr::IP::Lite::comp_addr_mask, @_); },
     'cmp'   => sub { inflate_args_and_run(\&NetAddr::IP::Lite::comp_addr_mask, @_); },
     '++'    => sub { inflate_args_and_run(\&NetAddr::IP::Lite::plusplus, @_); },
     '+'     => sub { inflate_args_and_run(\&NetAddr::IP::Lite::plus, @_); },
@@ -141,6 +142,13 @@ use overload (
         my $b = $_[1];
         $b->inflate if ref($_[1]) =~ /NetAddr::IP::LazyInit/;
         return ($a eq $b);
+    },
+    '!='    => sub {
+        my $a = $_[0];
+        $a->inflate if ref($_[0]) eq 'NetAddr::IP::LazyInit';
+        my $b = $_[1];
+        $b->inflate if ref($_[1]) eq 'NetAddr::IP::LazyInit';
+        return ($a ne $b);
     },
     'ne'    => sub {
         my $a = $_[0];
@@ -156,7 +164,16 @@ use overload (
         $b->inflate if ref($_[1]) eq 'NetAddr::IP::LazyInit';
         return ($a eq $b);
     },
+    '>'     => sub { return &comp_addr_mask > 0 ? 1 : 0; },
+    '<'     => sub { return &comp_addr_mask < 0 ? 1 : 0; },
+    '>='    => sub { return &comp_addr_mask < 0 ? 0 : 1; },
+    '<='    => sub { return &comp_addr_mask > 0 ? 0 : 1; },
+
 );
+
+sub comp_addr_mask {
+    return inflate_args_and_run(\&NetAddr::IP::Lite::comp_addr_mask, @_);
+}
 
 sub inflate_args_and_run {
     my $func = shift;
