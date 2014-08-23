@@ -3,7 +3,7 @@ package NetAddr::IP::LazyInit;
 use strict;
 use warnings;
 use NetAddr::IP qw(Zero Zeros Ones V4mask V4net netlimit);
-use Socket qw(inet_aton);
+use Socket qw(inet_pton AF_INET AF_INET6);
 use NetAddr::IP::Util;
 
 our $VERSION = eval '0.4';
@@ -83,13 +83,50 @@ my $zerov6 = pack('n6', (0,0,0,0,0,0));
 
 sub new { my $class = shift; bless {x=>[@_]}, $class }
 
-# create a real NetAddr::IP from a single IPv4 address with almost no validation
-# this has more overhead than LazyInit's new() but much less if you actually
-# make use of the IP object.
+=head1 METHODS
+
+=head2 new_ipv4
+
+Create a real NetAddr::IP from a single IPv4 address with almost no
+validation.  This has more overhead than the LazyInit new() but it's much
+faster if you make use of the IP object.
+
+This only takes one argument, the single IP address.  Anything else will fail
+in (probably) bad ways.  Validation is completely up to you and is not done
+here.
+
+   my $ip = NetAddr::IP::LazyInit->new_ipv4("127.0.0.1");
+
+=cut
+
+
 sub new_ipv4 {
     return bless {
-        addr    => $zerov6 . inet_aton($_[1]),
+        addr    => $zerov6 . inet_pton(AF_INET, $_[1]),
         mask    => $ones,
+        isv6    => 0,
+    }, 'NetAddr::IP';
+}
+
+=head2 new_ipv4_mask
+
+Create a real NetAddr::IP from a IPv4 subnet with almost no
+validation.  This has more overhead than the LazyInit new() but it's much
+faster if you make use of the IP object.
+
+This requires the IP address and the subnet mask as it's two arguments.
+Anything else will fail in (probably) bad ways.  Validation is completely
+up to the caller is not done here.
+
+   my $ip = NetAddr::IP::LazyInit->new_ipv4_mask("127.0.0.0", "255.255.255.0");
+
+=cut
+
+
+sub new_ipv4_mask {
+    return bless {
+        addr    => $zerov6 . inet_pton(AF_INET, $_[1]),
+        mask    => $zerov6 . inet_pton(AF_INET, $_[2]),
         isv6    => 0,
     }, 'NetAddr::IP';
 }
