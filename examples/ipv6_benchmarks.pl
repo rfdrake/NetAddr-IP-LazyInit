@@ -5,19 +5,8 @@ use warnings;
 use NetAddr::IP qw (Ones);
 use NetAddr::IP::Util qw (shiftleft);
 use Socket qw (inet_pton AF_INET6);
+use Math::BigInt;
 use lib './lib';
-
-# I started out with Math::BigInt, thinking 2^128 - 2^(128-$cidr) is the most
-# straightforward way to get the subnet mask.
-# two problems with this:
-# 1.  You need the netmask in network order, meaning you need to run pack('N4', $results);
-# 2.  Math::BigInt is slow
-
-# looking at the code for shiftleft() I noticed they avoided the Math::BigInt
-# stage by shifting the number in segments.  They also did the network byte
-# order for us, so I thought why not use shiftleft().
-
-# the answer is that it's still slower by a large amount
 
 my $masks = {
           1 => "\200\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0",
@@ -162,8 +151,15 @@ use Benchmark qw (cmpthese);
 # $Data::Dumper::Sortkeys = 1;
 # print Dumper \%masks;
 
-cmpthese(-3, {
+my $ones = Math::BigInt->new( 2 )->bpow( 128 );
 
+cmpthese(-3, {
+    'math:;bigint' => sub {
+        my ($ip, $cidr) = split('/', 'fe80::/64');
+        my $mask = $ones - Math::BigInt->new( 2 )->bpow( 128 - $cidr );
+        $mask = pack('N4', $mask);
+        bless { 'addr' => inet_pton(AF_INET6, $ip), 'mask' => $mask, 'isv6' => 1 }, 'NetAddr::IP';
+    },
     'netaddr::ip' => sub { new NetAddr::IP('fe80::/64'); },
     'shiftleft' => sub {
         my ($ip, $cidr) = split('/', 'fe80::/64');
