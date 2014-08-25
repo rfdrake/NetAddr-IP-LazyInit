@@ -194,6 +194,11 @@ cmpthese(-3, {
         my ($ip, $cidr) = ('fe80::', '/64');
         bless { 'addr' => inet_pton(AF_INET6, $ip), 'mask' => $masks->{$cidr}, 'isv6' => 1 }, 'NetAddr::IP';
     },
+    # the upper bound speed that we could achieve if we removed all the
+    # cruft of actually having to do work with our object :)
+    'bless' => sub {
+        bless { }, 'NetAddr::IP';
+    },
 
 
 });
