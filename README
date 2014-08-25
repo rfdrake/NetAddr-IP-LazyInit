@@ -5,7 +5,7 @@ NAME
 
 VERSION
 
-    0.4
+    0.5
 
 SYNOPSIS
 
@@ -60,4 +60,69 @@ COPYRIGHT AND LICENSE
     This library is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself, either Perl version 5.8.7 or, at
     your option, any later version of Perl 5 you may have available.
+
+METHODS
+
+ new
+
+    This replaces the NetAddr::IP->new method with a stub that stores the
+    arguments supplied in a temporary variable and returns immediately. No
+    validation is performed.
+
+    Once you call a method that can't be handled by LazyInit, a full
+    NetAddr::IP object is built and the request passed into that object.
+
+       my $ip = NetAddr::IP::LazyInit->new("127.0.0.1");
+
+ new_ipv4
+
+    Create a real NetAddr::IP from a single IPv4 address with almost no
+    validation. This has more overhead than the LazyInit new() but it's
+    much faster if you make use of the IP object.
+
+    This only takes one argument, the single IP address. Anything else will
+    fail in (probably) bad ways. Validation is completely up to you and is
+    not done here.
+
+       my $ip = NetAddr::IP::LazyInit->new_ipv4("127.0.0.1");
+
+ new_ipv4_mask
+
+    Create a real NetAddr::IP from a IPv4 subnet with almost no validation.
+    This has more overhead than the LazyInit new() but it's much faster if
+    you make use of the IP object.
+
+    This requires the IP address and the subnet mask as it's two arguments.
+    Anything else will fail in (probably) bad ways. Validation is
+    completely up to the caller is not done here.
+
+       my $ip = NetAddr::IP::LazyInit->new_ipv4_mask("127.0.0.0", "255.255.255.0");
+
+ new_ipv6
+
+    Create a real NetAddr::IP object from an IPv6 subnet with no
+    validation. This is almost as fast as the lazy object. The only caveat
+    being it requires a cidr mask.
+
+       my $ip = NetAddr::IP::LazyInit->new_ipv6("fe80::/64");
+
+ addr
+
+    Returns the IP address of the object. If we can extract the IP as a
+    string without converting to a real NetAddr::IP object, then we return
+    that. Currently it only returns IPv6 strings in lower case, which may
+    break your application if you aren't using the new standard.
+
+        my $ip = NetAddr::IP::LazyInit->new("127.0.0.1");
+        print $ip->addr;
+
+ mask
+
+    Returns the subnet mask of the object. If the user used the two
+    argument option then it returns the string they provided for the second
+    argument. Otherwise this will inflate to build a real NetAddr::IP
+    object and return the mask.
+
+        my $ip = NetAddr::IP::LazyInit->new("127.0.0.1", "255.255.255.0");
+        print $ip->mask;
 

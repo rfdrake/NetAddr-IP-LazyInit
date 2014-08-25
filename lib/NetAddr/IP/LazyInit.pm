@@ -6,7 +6,7 @@ use NetAddr::IP qw(Zero Zeros Ones V4mask V4net netlimit);
 use Socket qw(inet_pton AF_INET AF_INET6);
 use NetAddr::IP::Util;
 
-our $VERSION = eval '0.4';
+our $VERSION = eval '0.5';
 
 =head1 NAME
 
@@ -14,7 +14,7 @@ NetAddr::IP::LazyInit - NetAddr::IP objects with deferred validation B<SEE DESCR
 
 =head1 VERSION
 
-0.4
+0.5
 
 =head1 SYNOPSIS
 
@@ -290,7 +290,7 @@ cidr mask.
 
 sub new_ipv6 {
     my $pos = index($_[1],'/');
-    my $ip = substr($str, 0, $pos-1);
+    my $ip = substr($_[1], 0, $pos-1);
     return bless { 'addr' => inet_pton(AF_INET6, $ip), 'mask' => $masks->{substr($_[1], $pos+1)}, 'isv6' => 1 }, 'NetAddr::IP';
 }
 
