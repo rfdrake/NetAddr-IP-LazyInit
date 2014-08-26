@@ -5,7 +5,7 @@ NAME
 
 VERSION
 
-    0.5
+    0.6
 
 SYNOPSIS
 
@@ -73,38 +73,6 @@ METHODS
     NetAddr::IP object is built and the request passed into that object.
 
        my $ip = NetAddr::IP::LazyInit->new("127.0.0.1");
-
- new_ipv4
-
-    Create a real NetAddr::IP from a single IPv4 address with almost no
-    validation. This has more overhead than the LazyInit new() but it's
-    much faster if you make use of the IP object.
-
-    This only takes one argument, the single IP address. Anything else will
-    fail in (probably) bad ways. Validation is completely up to you and is
-    not done here.
-
-       my $ip = NetAddr::IP::LazyInit->new_ipv4("127.0.0.1");
-
- new_ipv4_mask
-
-    Create a real NetAddr::IP from a IPv4 subnet with almost no validation.
-    This has more overhead than the LazyInit new() but it's much faster if
-    you make use of the IP object.
-
-    This requires the IP address and the subnet mask as it's two arguments.
-    Anything else will fail in (probably) bad ways. Validation is
-    completely up to the caller is not done here.
-
-       my $ip = NetAddr::IP::LazyInit->new_ipv4_mask("127.0.0.0", "255.255.255.0");
-
- new_ipv6
-
-    Create a real NetAddr::IP object from an IPv6 subnet with no
-    validation. This is almost as fast as the lazy object. The only caveat
-    being it requires a cidr mask.
-
-       my $ip = NetAddr::IP::LazyInit->new_ipv6("fe80::/64");
 
  addr
 
