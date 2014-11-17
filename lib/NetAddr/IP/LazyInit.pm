@@ -6,7 +6,7 @@ use NetAddr::IP qw(Zero Zeros Ones V4mask V4net netlimit);
 use NetAddr::IP::Util;
 use v5.10.1;
 
-our $VERSION = eval '0.6';
+our $VERSION = eval '0.7';
 
 =head1 NAME
 
