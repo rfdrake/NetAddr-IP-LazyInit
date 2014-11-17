@@ -14,6 +14,7 @@ plan tests => 1 + $tests;
 
 SKIP: {
     use_ok('NetAddr::IP::LazyInit') or skip "Failed to load NetAddr::IP::LazyInit", $tests;
+    skip("NetAddr::IP >= 4.071 required for canon tests", $tests) if (NetAddr::IP->VERSION < 4.071);
     for my $c (sort keys %cases)
     {
 	my $ip = new NetAddr::IP::LazyInit $c;
